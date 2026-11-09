@@ -164,12 +164,17 @@
     if(mobile&&sky){
       if(canvas.parentElement!==sky)sky.append(canvas);
       const bounds=sky.getBoundingClientRect();
-      width=bounds.width;height=bounds.height;
+      width=Math.max(1,bounds.width);height=300;
     }else{
       if(canvas.parentElement!==document.body)document.body.insertBefore(canvas,document.body.firstChild);
       width=innerWidth;height=innerHeight;
     }
     canvas.classList.toggle('mobile-sky',mobile);
+    // CSS display dimensions must match drawing coordinates, independently of DPR.
+    // Explicit sizing also prevents percentage heights stretching across the page.
+    canvas.style.position=mobile?'absolute':'fixed';
+    canvas.style.width=`${width}px`;
+    canvas.style.height=`${height}px`;
     const dpr=Math.min(devicePixelRatio||1,1.5);
     canvas.width=width*dpr;canvas.height=height*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
     if(!corona&&!sun)refresh();else draw();
