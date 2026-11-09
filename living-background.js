@@ -109,10 +109,10 @@
 
   function draw() {
     ctx.clearRect(0,0,width,height);
-    const mobile=width<700;
-    const r=mobile?Math.min(width*.25,135):Math.min(width*.134,205);
-    const cx=mobile?width*.62:width*.785;
-    const cy=mobile?610:Math.min(height*.44,405);
+    const mobile=innerWidth<=700;
+    const r=mobile?Math.min(width*.23,95):Math.min(width*.134,205);
+    const cx=mobile?width*.5:width*.785;
+    const cy=mobile?height*.5:Math.min(height*.44,405);
     if(!dark){drawSun(cx,cy,r);return}
     const breath=1+Math.sin(time*.11)*.008;
     // The corona rotates almost imperceptibly; the occluding body stays steady.
@@ -159,7 +159,17 @@
     draw();
   }
   function resize(){
-    width=innerWidth;height=innerHeight;
+    const mobile=innerWidth<=700;
+    const sky=document.querySelector('.hero-sky');
+    if(mobile&&sky){
+      if(canvas.parentElement!==sky)sky.append(canvas);
+      const bounds=sky.getBoundingClientRect();
+      width=bounds.width;height=bounds.height;
+    }else{
+      if(canvas.parentElement!==document.body)document.body.insertBefore(canvas,document.body.firstChild);
+      width=innerWidth;height=innerHeight;
+    }
+    canvas.classList.toggle('mobile-sky',mobile);
     const dpr=Math.min(devicePixelRatio||1,1.5);
     canvas.width=width*dpr;canvas.height=height*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
     if(!corona&&!sun)refresh();else draw();
